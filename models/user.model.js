@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "Provide a district"]
     },
     dob: {
-        type: Date,
+        type: String,
         required: true,
         trim: true
     },

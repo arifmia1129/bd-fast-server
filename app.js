@@ -1,12 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 
+const userRouter = require("./routes/user.route");
+
 const app = express();
 
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+app.use("/api/v1/user", userRouter);
+
 
 // initial route
 app.get("/", (req, res) => {
@@ -25,7 +31,7 @@ app.use((req, res, next) => {
 // error handling route
 app.use((err, req, res, next) => {
     res.status(500).json({
-        success: true,
+        success: false,
         message: "Something broken"
     })
 })
