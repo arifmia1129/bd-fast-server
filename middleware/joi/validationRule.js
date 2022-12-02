@@ -42,3 +42,14 @@ exports.registrationValidationRule = Joi.object({
         .valid("digitalCenter", "citizen", "upAssistant", "upSecretary", "villagePolice", "shopkeeper", "publicRepresentative")
 
 })
+
+exports.loginValidationRule = Joi.object({
+    mobile: Joi.string()
+        .required()
+        .trim()
+        .length(11),
+    pin: Joi.string()
+        .required()
+        .trim()
+        .length(8)
+})

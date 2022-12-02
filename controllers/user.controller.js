@@ -27,6 +27,34 @@ exports.registerUser = async (req, res) => {
             })
         });
     } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something broken"
+        })
+    }
+}
 
+
+exports.loginUser = async (req, res) => {
+    try {
+        bcrypt.compare(req.body.pin, "hash", function (err, result) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Something broken"
+                })
+            }
+
+            res.status(201).json({
+                success: true,
+                message: "Successfully logged in user",
+                user: req.body
+            })
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Something broken"
+        })
     }
 }
