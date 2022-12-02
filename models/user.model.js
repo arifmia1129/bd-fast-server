@@ -22,9 +22,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "Provide a district"]
     },
     dob: {
-        type: String,
-        required: true,
-        trim: true
+        type: String
     },
     nid: {
         type: String,
@@ -43,24 +41,10 @@ const userSchema = new mongoose.Schema({
         minLength: 11
     },
     pin: {
-        type: String,
-        required: true,
-        trim: true,
-        maxLength: 8,
-        minLength: 8
+        type: String
     },
     confirmPin: {
-        type: String,
-        required: true,
-        trim: true,
-        maxLength: 8,
-        minLength: 8,
-        validate: {
-            validator: function (v) {
-                return this.password == v;
-            },
-            message: "Pin and confirm pin didn't match"
-        }
+        type: String
     },
     deviceModel: {
         type: String,
