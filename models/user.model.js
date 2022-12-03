@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        unique: true,
+        unique: [true, "NID already used"],
         maxLength: 17,
         minLength: 10
     },
@@ -62,6 +62,13 @@ const userSchema = new mongoose.Schema({
             values: ["digitalCenter", "citizen", "upAssistant", "upSecretary", "villagePolice", "shopkeeper", "publicRepresentative"],
             message: "{VALUE} is not valid user type"
         }
+    },
+    role: {
+        type: String,
+        enum: {
+            values: ["user", "admin"]
+        },
+        default: "user"
     }
 })
 

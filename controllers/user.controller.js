@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
 const salt = bcrypt.genSaltSync(10);
+const config = require("../config/config");
+const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res) => {
     try {
@@ -14,17 +16,25 @@ exports.registerUser = async (req, res) => {
             req.body.pin = hash;
             req.body.confirmPin = undefined;
 
-            // const user = new User(req.body);
+            try {
+                const user = new User(req.body);
 
-            // await user.save();
+                await user.save();
 
-            const { pin, confirmPin, ...other } = req.body;
+                const { pin, confirmPin, ...other } = req.body;
 
-            res.status(201).json({
-                success: true,
-                message: "Successfully created user",
-                user: other
-            })
+                res.status(201).json({
+                    success: true,
+                    message: "Successfully created user",
+                    user: other
+                })
+            } catch (error) {
+                res.status(400).json({
+                    success: false,
+                    message: "Something wrong",
+                    error: error.message
+                })
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -37,7 +47,25 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
-        bcrypt.compare(req.body.pin, "hash", function (err, result) {
+        const { mobile, pin } = req.body;
+
+        if (!mobile || !pin) {
+            return res.status(400).json({
+                success: false,
+                message: "Mobile and Pin must be provide"
+            })
+        }
+
+        const user = await User.findOne({ mobile });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        bcrypt.compare(pin, user.pin, function (err, result) {
             if (err) {
                 return res.status(500).json({
                     success: false,
@@ -45,10 +73,31 @@ exports.loginUser = async (req, res) => {
                 })
             }
 
+            if (!result) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Mobile or Pin is not valid"
+                })
+            }
+
+            const payload = {
+                mobile,
+                role: user.role
+            }
+
+            const token = jwt.sign(payload, config.key.jwt, {
+                expiresIn: "1d"
+            })
+
+            const { pin, ...other } = user.toObject();
+
             res.status(201).json({
                 success: true,
                 message: "Successfully logged in user",
-                user: req.body
+                user: {
+                    user: other,
+                    token
+                }
             })
         });
     } catch (error) {
